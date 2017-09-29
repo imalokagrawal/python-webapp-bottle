@@ -11,10 +11,10 @@ RUN apt-get upgrade -y
 
 # install pip
 RUN apt-get install python-pip -y
-ADD server.py /home/bottle/server.py
+# ADD server.py /home/bottle/server.py
 RUN pip install bottle
 
 # expose ports
 EXPOSE 8080
-ENTRYPOINT ["/usr/bin/python", "/home/bottle/server.py"]
+#ENTRYPOINT ["/usr/bin/python", "/home/bottle/server.py"]
 USER bottle
