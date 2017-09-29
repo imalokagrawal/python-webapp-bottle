@@ -1,17 +1,20 @@
-FROM python:3.4
+FROM ubuntu
 
-RUN mkdir /code
-WORKDIR /code
-ADD requirements.txt /code/
-RUN pip install -r requirements.txt
-ADD . /code/
-# ssh
-ENV SSH_PASSWD "root:Docker!"
-RUN apt-get update \
-	&& apt-get install -y --no-install-recommends openssh-server \
-	&& echo "$SSH_PASSWD" | chpasswd 
+# create user
+RUN groupadd web
+RUN useradd -d /home/bottle -m bottle
 
-COPY sshd_config /etc/ssh/
-	
-EXPOSE 8000 2222
-CMD ["python", "/code/manage.py", "runserver", "0.0.0.0:8000"]
+# make sure sources are up to date
+RUN echo "deb http://archive.ubuntu.com/ubuntu precise main universe" > /etc/apt/sources.list
+RUN apt-get update
+RUN apt-get upgrade -y
+
+# install pip
+RUN apt-get install python-pip -y
+ADD server.py /home/bottle/server.py
+RUN pip install bottle
+
+# expose ports
+EXPOSE 8080
+ENTRYPOINT ["/usr/bin/python", "/home/bottle/server.py"]
+USER bottle
