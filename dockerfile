@@ -131,13 +131,7 @@ RUN set -ex \
 # =========
 
 # nginx
-COPY nginx-default-site /etc/nginx/sites-available/default
-# uwsgi
-COPY uwsgi.ini /tmp/
-COPY uwsgi_django.ini /tmp
-COPY index.py /tmp/
-# ssh
-COPY sshd_config /etc/ssh/
+ADD . /etc/nginx/sites-available/default
 
 RUN set -ex \
 	&& ln -s /usr/local/bin/python3.6 /usr/bin/python3 \
@@ -145,10 +139,7 @@ RUN set -ex \
 	##
 	&& rm -rf $DOCKER_BUILD_HOME/* \
         && rm -rf /usr/src/request/* \
-	##
-	&& test ! -d $UWSGI_DIR && mkdir -p $UWSGI_DIR
+	
 
-COPY entrypoint.sh /usr/local/bin
-RUN chmod u+x /usr/local/bin/entrypoint.sh
 EXPOSE 2222 8080
-ENTRYPOINT ["entrypoint.sh"]
+ENTRYPOINT ["python","app.py"]
